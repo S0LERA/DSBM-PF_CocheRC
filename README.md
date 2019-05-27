@@ -7,3 +7,9 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 ## Versiones
 ### Versión 0.5
  - Esqueleto del código creado con STM32CubeMX
+
+### Versión 0.8
+ - Empezadas funciones de ultrasonidos, motor y bluetooth;
+   - Función del motor funciona.
+   - Función de ultrasonidos sin probar.
+   - Función de bluetooth no recibe.
