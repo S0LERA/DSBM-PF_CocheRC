@@ -13,3 +13,8 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
    - Función del motor funciona.
    - Función de ultrasonidos sin probar.
    - Función de bluetooth no recibe.
+
+### Versión 0.9
+ - Completadas funciones auxiliares.
+   - El cálculo de la distancia con el ultrasonido no funciona bien.
+   - La función del bluetooth ya funciona.
