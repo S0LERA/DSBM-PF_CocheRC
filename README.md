@@ -40,3 +40,6 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 ### Versión 1.5.5
  - Añadida primera versión de la documentación.
  - Actualizado el .ioc del proyecto.
+
+### Versión 1.8
+ - Reestructuración del código.

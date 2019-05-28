@@ -28,7 +28,6 @@
 #define RI 5
 #define DD 6
 #define DI 7
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -57,7 +56,7 @@ TIM_HandleTypeDef htim11;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-DMA_HandleTypeDef hdma_usart2_tx;
+DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
 unsigned char data[1];
@@ -72,10 +71,10 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_USART1_UART_Init(void);
-static void MX_USART2_UART_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM11_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -116,10 +115,10 @@ int main(void)
   MX_DMA_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
   MX_TIM5_Init();
   MX_TIM11_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   HAL_TIM_Base_Start(&htim2);
   HAL_TIM_Base_Start(&htim3);
   HAL_TIM_Base_Start(&htim5);
@@ -130,9 +129,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_Base_Start_IT(&htim5);
-  HAL_TIM_Base_Start_IT(&htim11);
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start_IT(&htim11);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -143,14 +141,14 @@ int main(void)
     HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     //printf("Recibido: %c\r\n", data[0]);
 
-    contador++;
+    /*contador++;
     if(contador == 10000000){
       ultrasonidos();
       contador = 0;
-    }
-
-    if (data[0] == 'F')
+    }*/
+    switch (data[0])
     {
+    case 'F':
       moverMotor(RECTO);
       //ultrasonidos();
       if (moverse == 1)
@@ -158,26 +156,14 @@ int main(void)
         htim2.Instance->CCR2 = 1000;
         htim3.Instance->CCR2 = 1000;
       }
-    }
-    else if (data[0] == 'B')
-    {
+      break;
+    case 'B':
       moverMotor(DETRAS);
       moverse = 1;
       htim2.Instance->CCR2 = 1000;
       htim3.Instance->CCR2 = 1000;
-    }
-    else if (data[0] == 'L')
-    {
-      moverMotor(IZQUIERDA);
-      //ultrasonidos();
-      if (moverse == 1)
-      {
-        htim2.Instance->CCR2 = 1000;
-        htim3.Instance->CCR2 = 1000;
-      }
-    }
-    else if (data[0] == 'R')
-    {
+      break;
+    case 'R':
       moverMotor(DERECHA);
       //ultrasonidos();
       if (moverse == 1)
@@ -185,9 +171,17 @@ int main(void)
         htim2.Instance->CCR2 = 1000;
         htim3.Instance->CCR2 = 1000;
       }
-    }
-    else if (data[0] == 'I')
-    {
+      break;
+    case 'L':
+      moverMotor(IZQUIERDA);
+      //ultrasonidos();
+      if (moverse == 1)
+      {
+        htim2.Instance->CCR2 = 1000;
+        htim3.Instance->CCR2 = 1000;
+      }
+      break;
+    case 'I':
       moverMotor(RD);
       //ultrasonidos();
       if (moverse == 1)
@@ -195,9 +189,8 @@ int main(void)
         htim2.Instance->CCR2 = 1000;
         htim3.Instance->CCR2 = 0;
       }
-    }
-    else if (data[0] == 'G')
-    {
+      break;
+    case 'G':
       moverMotor(RI);
       //ultrasonidos();
       if (moverse == 1)
@@ -205,9 +198,8 @@ int main(void)
         htim2.Instance->CCR2 = 0;
         htim3.Instance->CCR2 = 1000;
       }
-    }
-    else if (data[0] == 'J')
-    {
+      break;
+    case 'J':
       moverMotor(DD);
       //ultrasonidos();
       if (moverse == 1)
@@ -215,9 +207,8 @@ int main(void)
         htim2.Instance->CCR2 = 1000;
         htim3.Instance->CCR2 = 0;
       }
-    }
-    else if (data[0] == 'H')
-    {
+      break;
+    case 'H':
       moverMotor(DI);
       //ultrasonidos();
       if (moverse == 1)
@@ -225,11 +216,11 @@ int main(void)
         htim2.Instance->CCR2 = 0;
         htim3.Instance->CCR2 = 1000;
       }
-    }
-    else
-    {
+      break;
+    default:
       htim2.Instance->CCR2 = 0;
       htim3.Instance->CCR2 = 0;
+      break;
     }
     /* USER CODE BEGIN 3 */
   }
@@ -237,45 +228,40 @@ int main(void)
 }
 void moverMotor(int modo)
 {
-  if (modo == RECTO)
+  switch (modo)
   {
+  case RECTO:
     htim5.Instance->CCR1 = 62;
 
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
-  }
-  else if (modo == DERECHA)
-  {
+    break;
+  case DERECHA:
     htim5.Instance->CCR1 = 27;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
-  }
-  else if (modo == IZQUIERDA)
-  {
+    break;
+  case IZQUIERDA:
     htim5.Instance->CCR1 = 105;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
-  }
-  else if (modo == DETRAS)
-  {
+    break;
+  case DETRAS:
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
-  }
-  else if (modo == RD)
-  {
+    break;
+  case RD:
     htim5.Instance->CCR1 = 44;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
-  }
-  else if (modo == RI)
-  {
+    break;
+  case RI:
     htim5.Instance->CCR1 = 80;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
-  }
-  else if (modo == DD)
-  {
+    break;
+  case DD:
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
-  }
-  else if (modo == DI)
-  {
+    break;
+  case DI:
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
+    break;
   }
 }
 
@@ -288,10 +274,12 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /*Configure the main internal regulator output voltage  */
+  /** Configure the main internal regulator output voltage 
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  /*Initializes the CPU, AHB and APB busses clocks */
+  /** Initializes the CPU, AHB and APB busses clocks 
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -562,9 +550,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Stream6_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+  /* DMA1_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
 }
 
 /**
@@ -577,13 +565,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  //HAL_GPIO_WritePin(Ultrasonido_GPIO_Port, Ultrasonido_Pin, GPIO_PIN_RESET);
-
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : B1_Pin */
+  GPIO_InitStruct.Pin = B1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA5 PA6 */
   GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
@@ -658,8 +652,9 @@ void ultrasonidos()
   int times2 = 0;
   int times3 = 0;
   cambiarModoPin(0); //Modo output
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
   times = 0;
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+
   while (times >= 1)
   {
   }
@@ -668,16 +663,15 @@ void ultrasonidos()
 
   while (!(GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
-    printf("WHILE1\r\n");
+    printf("WHILE1 \r\n");
   }
   times2 = times;
-  //printf("Times2 %d\r\n", times2);
   while ((GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
-    printf("WHILE2\r\n");
+    printf("WHILE2 \r\n");
   }
   times3 = times;
-  //printf("Times3 %d\r\n", times3);
+
   if (calcularDistanciaCm(times3 - times2) < 40)
   {
     moverse = 0;
