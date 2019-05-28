@@ -36,3 +36,7 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 
 ### Versión 1.5
  - Posiciones del motor del ultrasonido ajustadas.
+
+### Versión 1.5.5
+ - Añadida primera versión de la documentación.
+ - Actualizado el .ioc del proyecto.
