@@ -24,6 +24,10 @@
 #define DERECHA 1
 #define IZQUIERDA 2
 #define DETRAS 3
+#define RD 4
+#define RI 5
+#define DD 6
+#define DI 7
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -136,38 +140,78 @@ int main(void)
     /* USER CODE END WHILE */
     HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     //printf("Recibido: %c \r\n", data[0]);
+    /*
     if (data[0] != 'S')
     {
-      htim2.Instance->CCR2 = 65000;
-      htim3.Instance->CCR2 = 65000;
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 1000;
     }
-    else
+    else if (data[0] == 'D')
     {
       htim2.Instance->CCR2 = 0;
       htim3.Instance->CCR2 = 0;
-    }
+    }else{
+      htim2.Instance->CCR2 = 0;
+      htim3.Instance->CCR2 = 0;
+    }*/
+
     if (data[0] == 'F')
     {
-      printf("Palante\r\n");
       moverMotor(RECTO);
       ultrasonidos();
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 1000;
     }
     else if (data[0] == 'B')
     {
-      printf("Patras\r\n");
       moverMotor(DETRAS);
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 1000;
     }
     else if (data[0] == 'L')
     {
-      printf("Izquierda\r\n");
       moverMotor(IZQUIERDA);
       ultrasonidos();
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 1000;
     }
     else if (data[0] == 'R')
     {
-      printf("Derecha\r\n");
       moverMotor(DERECHA);
       ultrasonidos();
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 1000;
+    }
+    else if (data[0] == 'I')
+    {
+      moverMotor(RD);
+      ultrasonidos();
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 0;
+    }
+    else if (data[0] == 'G')
+    {
+      moverMotor(RI);
+      ultrasonidos();
+      htim2.Instance->CCR2 = 0;
+      htim3.Instance->CCR2 = 1000;
+    }
+    else if (data[0] == 'J')
+    {
+      moverMotor(DD);
+      ultrasonidos();
+      htim2.Instance->CCR2 = 1000;
+      htim3.Instance->CCR2 = 0;
+    }
+    else if (data[0] == 'H')
+    {
+      moverMotor(DI);
+      ultrasonidos();
+      htim2.Instance->CCR2 = 0;
+      htim3.Instance->CCR2 = 1000;
+    }else{
+      htim2.Instance->CCR2 = 0;
+      htim3.Instance->CCR2 = 0;
     }
 
     /* USER CODE BEGIN 3 */
@@ -196,8 +240,17 @@ void moverMotor(int modo)
   else if (modo == DETRAS)
   {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
+  }else if(modo == RD){
+    htim5.Instance->CCR1 = 65;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
+  }else if(modo == RI){
+    htim5.Instance->CCR1 = 45;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
+  }else if(modo == DD){
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
+  }else if(modo == DI){
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
   }
-
 }
 
 /**
@@ -570,10 +623,10 @@ void cambiarModoPin(int modo)
 
 int calcularDistanciaCm(int veces)
 {
-  printf("%d\r\n", veces);
+  //printf("%d\r\n", veces);
   int distancia = 0;
   distancia = (veces * 10) / 58;
-  printf("D: %d cm.\n", distancia);
+  //printf("D: %d cm.\n", distancia);
   return distancia;
 }
 
@@ -595,12 +648,12 @@ void ultrasonidos()
   {
   }
   times2 = times;
-  printf("Times2 %d\r\n", times2);
+  //printf("Times2 %d\r\n", times2);
   while ((GPIOC->IDR & GPIO_IDR_ID15_Msk))
   {
   }
   times3 = times;
-  printf("Times3 %d\r\n", times3);
+  //printf("Times3 %d\r\n", times3);
   if (calcularDistanciaCm(times3 - times2) < 40)
   {
     //Aqui para ver si esta a menos de 4 cm

@@ -22,3 +22,6 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 ### Versión 1.0
  - COCHE EN FUNCIONAMIENTO.
  - La función de ultrasonidos sigue sin calcular bien los valores.
+
+### Versión 1.2
+ - Añadido direccionamiento diagonal (Delante-Derecha, Delante-Izquierda, Detras-Derecha, Detras-Izquierda)
