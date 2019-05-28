@@ -25,3 +25,7 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 
 ### Versión 1.2
  - Añadido direccionamiento diagonal (Delante-Derecha, Delante-Izquierda, Detras-Derecha, Detras-Izquierda)
+
+### Versión 1.3
+ - Añadida variable condicional para el control de obstaculos con ultrasonidos.
+   - Los US siguen sin funcionar bien.
