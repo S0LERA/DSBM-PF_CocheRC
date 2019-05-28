@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.windows": {
+        "PATH": "C:\\.platformio\\penv\\Scripts;C:\\.platformio\\penv;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\Git\\cmd;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files\\Java\\jdk1.8.0_181\\bin;C:\\Users\\Juan Mena\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\Juan Mena\\AppData\\Local\\Microsoft\\WindowsApps;D:\\VisualStudio\\MicrosoftVSCode\\bin;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\Git\\cmd;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files\\Java\\jdk1.8.0_181\\bin;C:\\Users\\Juan Mena\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\Juan Mena\\AppData\\Local\\Microsoft\\WindowsApps;D:\\VisualStudio\\MicrosoftVSCode\\bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}

@@ -139,7 +139,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    HAL_UART_Receive_IT(&huart1, data, sizeof(data));
+HAL_UART_Receive_IT(&huart1, data, sizeof(data));
 
     if (data[0] == 'F')
     {
@@ -223,7 +223,6 @@ int main(void)
       htim2.Instance->CCR2 = 0;
       htim3.Instance->CCR2 = 0;
     }
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -270,6 +269,7 @@ void moverMotor(int modo)
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
   }
 }
+
 
 /**
   * @brief System Clock Configuration
@@ -403,6 +403,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
+
 }
 
 /**
@@ -450,6 +451,7 @@ static void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 2 */
   HAL_TIM_MspPostInit(&htim5);
+
 }
 
 /**
@@ -479,6 +481,7 @@ static void MX_TIM11_Init(void)
   /* USER CODE BEGIN TIM11_Init 2 */
 
   /* USER CODE END TIM11_Init 2 */
+
 }
 
 /**
@@ -511,6 +514,7 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
+
 }
 
 /**
@@ -543,12 +547,13 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
 }
 
 /** 
   * Enable DMA controller clock
   */
-static void MX_DMA_Init(void)
+static void MX_DMA_Init(void) 
 {
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
@@ -557,6 +562,7 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream6_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+
 }
 
 /**
@@ -569,29 +575,27 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Ultrasonido_GPIO_Port, Ultrasonido_Pin, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(Ultrasonido_GPIO_Port, Ultrasonido_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : Ultrasonido_Pin */
-  GPIO_InitStruct.Pin = Ultrasonido_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Ultrasonido_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA5 PA6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
+  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Ultrasonido_Pin */
+  GPIO_InitStruct.Pin = Ultrasonido_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(Ultrasonido_GPIO_Port, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -623,19 +627,19 @@ void cambiarModoPin(int modo)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if (modo == 0) //Output
   {
-    GPIO_InitStruct.Pin = Ultrasonido_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(Ultrasonido_GPIO_Port, &GPIO_InitStruct);
+    //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
   }
   else if (modo == 1) //Input
   {
-    GPIO_InitStruct.Pin = Ultrasonido_Pin;
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(Ultrasonido_GPIO_Port, &GPIO_InitStruct);
+    //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
   }
 }
 
@@ -644,7 +648,7 @@ int calcularDistanciaCm(int veces)
   //printf("%d\r\n", veces);
   int distancia = 0;
   distancia = (veces * 10) / 58;
-  //printf("D: %d cm.\n", distancia);
+  printf("D: %d cm.\r\n", distancia);
   return distancia;
 }
 
@@ -653,21 +657,21 @@ void ultrasonidos()
   int times2 = 0;
   int times3 = 0;
   cambiarModoPin(0); //Modo output
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
   HAL_Delay(50);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
   times = 0;
   while (times >= 1)
   {
   }
 
   cambiarModoPin(1); //Modo Input
-  while (!(GPIOC->IDR & GPIO_IDR_ID15_Msk))
+  while (!(GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
   }
   times2 = times;
   //printf("Times2 %d\r\n", times2);
-  while ((GPIOC->IDR & GPIO_IDR_ID15_Msk))
+  while ((GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
   }
   times3 = times;
@@ -702,7 +706,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -711,7 +715,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{
+{ 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

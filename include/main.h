@@ -60,10 +60,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define Ultrasonido_Pin GPIO_PIN_15
-#define Ultrasonido_GPIO_Port GPIOC
 #define Motor_Pin GPIO_PIN_0
 #define Motor_GPIO_Port GPIOA
+#define Ultrasonido_Pin GPIO_PIN_8
+#define Ultrasonido_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

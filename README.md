@@ -29,3 +29,7 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 ### Versión 1.3
  - Añadida variable condicional para el control de obstaculos con ultrasonidos.
    - Los US siguen sin funcionar bien.
+
+### Versión 1.4
+ - El ultrasonido ahora calcula bien la distancia.
+ - Al detectar un obstaculo se para.
