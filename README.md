@@ -33,3 +33,6 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 ### Versión 1.4
  - El ultrasonido ahora calcula bien la distancia.
  - Al detectar un obstaculo se para.
+
+### Versión 1.5
+ - Posiciones del motor del ultrasonido ajustadas.

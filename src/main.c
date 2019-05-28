@@ -63,6 +63,7 @@ DMA_HandleTypeDef hdma_usart2_tx;
 unsigned char data[1];
 volatile int times = 0;
 int moverse = 1;
+long int contador = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -139,12 +140,19 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-HAL_UART_Receive_IT(&huart1, data, sizeof(data));
+    HAL_UART_Receive_IT(&huart1, data, sizeof(data));
+    //printf("Recibido: %c\r\n", data[0]);
+
+    contador++;
+    if(contador == 10000000){
+      ultrasonidos();
+      contador = 0;
+    }
 
     if (data[0] == 'F')
     {
       moverMotor(RECTO);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -161,7 +169,7 @@ HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     else if (data[0] == 'L')
     {
       moverMotor(IZQUIERDA);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -171,7 +179,7 @@ HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     else if (data[0] == 'R')
     {
       moverMotor(DERECHA);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -181,7 +189,7 @@ HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     else if (data[0] == 'I')
     {
       moverMotor(RD);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -191,7 +199,7 @@ HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     else if (data[0] == 'G')
     {
       moverMotor(RI);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 0;
@@ -201,7 +209,7 @@ HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     else if (data[0] == 'J')
     {
       moverMotor(DD);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -211,7 +219,7 @@ HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     else if (data[0] == 'H')
     {
       moverMotor(DI);
-      ultrasonidos();
+      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 0;
@@ -231,18 +239,19 @@ void moverMotor(int modo)
 {
   if (modo == RECTO)
   {
-    htim5.Instance->CCR1 = 75;
+    htim5.Instance->CCR1 = 62;
+
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
   }
   else if (modo == DERECHA)
   {
-    htim5.Instance->CCR1 = 25;
+    htim5.Instance->CCR1 = 27;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
   }
   else if (modo == IZQUIERDA)
   {
-    htim5.Instance->CCR1 = 50;
+    htim5.Instance->CCR1 = 105;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
   }
@@ -252,12 +261,12 @@ void moverMotor(int modo)
   }
   else if (modo == RD)
   {
-    htim5.Instance->CCR1 = 65;
+    htim5.Instance->CCR1 = 44;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
   }
   else if (modo == RI)
   {
-    htim5.Instance->CCR1 = 45;
+    htim5.Instance->CCR1 = 80;
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
   }
   else if (modo == DD)
@@ -269,7 +278,6 @@ void moverMotor(int modo)
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
   }
 }
-
 
 /**
   * @brief System Clock Configuration
@@ -403,7 +411,6 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
-
 }
 
 /**
@@ -451,7 +458,6 @@ static void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 2 */
   HAL_TIM_MspPostInit(&htim5);
-
 }
 
 /**
@@ -481,7 +487,6 @@ static void MX_TIM11_Init(void)
   /* USER CODE BEGIN TIM11_Init 2 */
 
   /* USER CODE END TIM11_Init 2 */
-
 }
 
 /**
@@ -514,7 +519,6 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
-
 }
 
 /**
@@ -547,13 +551,12 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
-
 }
 
 /** 
   * Enable DMA controller clock
   */
-static void MX_DMA_Init(void) 
+static void MX_DMA_Init(void)
 {
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
@@ -562,7 +565,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream6_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
-
 }
 
 /**
@@ -581,10 +583,10 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   //HAL_GPIO_WritePin(Ultrasonido_GPIO_Port, Ultrasonido_Pin, GPIO_PIN_RESET);
 
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA5 PA6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5|GPIO_PIN_6;
+  GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -595,7 +597,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Ultrasonido_GPIO_Port, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -657,8 +658,6 @@ void ultrasonidos()
   int times2 = 0;
   int times3 = 0;
   cambiarModoPin(0); //Modo output
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
-  HAL_Delay(50);
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
   times = 0;
   while (times >= 1)
@@ -666,13 +665,16 @@ void ultrasonidos()
   }
 
   cambiarModoPin(1); //Modo Input
+
   while (!(GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
+    printf("WHILE1\r\n");
   }
   times2 = times;
   //printf("Times2 %d\r\n", times2);
   while ((GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
+    printf("WHILE2\r\n");
   }
   times3 = times;
   //printf("Times3 %d\r\n", times3);
@@ -706,7 +708,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -715,7 +717,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
