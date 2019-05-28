@@ -23,6 +23,7 @@
 #define RECTO 0
 #define DERECHA 1
 #define IZQUIERDA 2
+#define DETRAS 3
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -118,6 +119,8 @@ int main(void)
   HAL_TIM_Base_Start(&htim5);
   HAL_TIM_Base_Start(&htim11);
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_Base_Start_IT(&htim5);
@@ -133,7 +136,16 @@ int main(void)
     /* USER CODE END WHILE */
     HAL_UART_Receive_IT(&huart1, data, sizeof(data));
     //printf("Recibido: %c \r\n", data[0]);
-
+    if (data[0] != 'S')
+    {
+      htim2.Instance->CCR2 = 65000;
+      htim3.Instance->CCR2 = 65000;
+    }
+    else
+    {
+      htim2.Instance->CCR2 = 0;
+      htim3.Instance->CCR2 = 0;
+    }
     if (data[0] == 'F')
     {
       printf("Palante\r\n");
@@ -143,6 +155,7 @@ int main(void)
     else if (data[0] == 'B')
     {
       printf("Patras\r\n");
+      moverMotor(DETRAS);
     }
     else if (data[0] == 'L')
     {
@@ -156,6 +169,7 @@ int main(void)
       moverMotor(DERECHA);
       ultrasonidos();
     }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -165,15 +179,25 @@ void moverMotor(int modo)
   if (modo == RECTO)
   {
     htim5.Instance->CCR1 = 75;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
   }
   else if (modo == DERECHA)
   {
     htim5.Instance->CCR1 = 25;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
   }
   else if (modo == IZQUIERDA)
   {
     htim5.Instance->CCR1 = 50;
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
   }
+  else if (modo == DETRAS)
+  {
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
+  }
+
 }
 
 /**
@@ -546,7 +570,7 @@ void cambiarModoPin(int modo)
 
 int calcularDistanciaCm(int veces)
 {
-    printf("%d\r\n",veces);
+  printf("%d\r\n", veces);
   int distancia = 0;
   distancia = (veces * 10) / 58;
   printf("D: %d cm.\n", distancia);
@@ -558,8 +582,10 @@ void ultrasonidos()
   int times2 = 0;
   int times3 = 0;
   cambiarModoPin(0); //Modo output
-  times = 0;
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_Delay(50);
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_15, GPIO_PIN_SET);
+  times = 0;
   while (times >= 1)
   {
   }
@@ -569,12 +595,12 @@ void ultrasonidos()
   {
   }
   times2 = times;
-  printf("Times2 %d\r\n",times2);
+  printf("Times2 %d\r\n", times2);
   while ((GPIOC->IDR & GPIO_IDR_ID15_Msk))
   {
   }
   times3 = times;
-  printf("Times3 %d\r\n",times3);
+  printf("Times3 %d\r\n", times3);
   if (calcularDistanciaCm(times3 - times2) < 40)
   {
     //Aqui para ver si esta a menos de 4 cm

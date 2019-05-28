@@ -18,3 +18,7 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
  - Completadas funciones auxiliares.
    - El cálculo de la distancia con el ultrasonido no funciona bien.
    - La función del bluetooth ya funciona.
+
+### Versión 1.0
+ - COCHE EN FUNCIONAMIENTO.
+ - La función de ultrasonidos sigue sin calcular bien los valores.
