@@ -135,9 +135,9 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  { 
+  {
     ultrasonidos();
-    HAL_Delay(100);
+    HAL_Delay(50);
 
     HAL_UART_Receive_IT(&huart1, data, sizeof(data));
 
@@ -628,10 +628,10 @@ void cambiarModoPin(int modo)
 
 int calcularDistanciaCm(int veces)
 {
-  //printf("%d\r\n", veces);
   int distancia = 0;
   distancia = (veces * 10) / 58;
-  printf("D: %d cm.\r\n", distancia);
+  //printf("D: %d cm.\r\n", distancia);
+  HAL_Delay(10);
   return distancia;
 }
 

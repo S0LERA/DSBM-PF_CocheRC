@@ -48,3 +48,7 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
  - FUNCIONALIDAD COMPLETA.
    - Ahora el ultrasonido hace bien los cálculos.
  - Añadido esquema de cableado con Fritzing.
+  
+### Versión 2.1
+ - Reestructuración del código.
+ - Mejora del tiempo de respuesta.
