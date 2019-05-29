@@ -59,9 +59,9 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
-unsigned char data[1];
-int volatile times = 0;
-int moverse = 1;
+unsigned char data[1];  /*Variable para almacenar el dato que recibimos del bluetooth*/
+int volatile times = 0; /*Variable para contar las veces que salta la interrupción por el TIM11*/
+int moverse = 1;        /*Variable para mover o no el coche*/
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -138,26 +138,26 @@ int main(void)
   {
     ultrasonidos();
     HAL_Delay(50);
-
+    /*Recibimos la letra correspondiente a la instrucción debe realizar el coche*/
     HAL_UART_Receive_IT(&huart1, data, sizeof(data));
 
     switch (data[0])
     {
-    case 'F':
+    case 'F': /*Ir hacia delante*/
       moverMotor(RECTO);
-      if (moverse == 1)
+      if (moverse == 1) 
       {
-        htim2.Instance->CCR2 = 1000;
-        htim3.Instance->CCR2 = 1000;
+        htim2.Instance->CCR2 = 1000;  /*Mover la rueda izquierda*/
+        htim3.Instance->CCR2 = 1000;  /*Mover la rueda derecha*/
       }
       break;
-    case 'B':
+    case 'B': /*Ir hacia atrás*/
       moverMotor(DETRAS);
       moverse = 1;
       htim2.Instance->CCR2 = 1000;
       htim3.Instance->CCR2 = 1000;
       break;
-    case 'R':
+    case 'R': /*Girar a la derecha*/
       moverMotor(DERECHA);
       if (moverse == 1)
       {
@@ -165,7 +165,7 @@ int main(void)
         htim3.Instance->CCR2 = 1000;
       }
       break;
-    case 'L':
+    case 'L': /*Girar a la izquierda*/
       moverMotor(IZQUIERDA);
       if (moverse == 1)
       {
@@ -173,23 +173,23 @@ int main(void)
         htim3.Instance->CCR2 = 1000;
       }
       break;
-    case 'I':
+    case 'I': /*Girar a la derecha mientras avanzamos hacia delante*/
       moverMotor(RD);
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
-        htim3.Instance->CCR2 = 0;
+        htim3.Instance->CCR2 = 0;   /*Parar la rueda derecha*/
       }
       break;
-    case 'G':
+    case 'G': /*Girar a la izquierda mientras avanzamos hacia delante*/
       moverMotor(RI);
       if (moverse == 1)
       {
-        htim2.Instance->CCR2 = 0;
+        htim2.Instance->CCR2 = 0;   /*Parar la rueda izquierda*/
         htim3.Instance->CCR2 = 1000;
       }
       break;
-    case 'J':
+    case 'J': /*Girar a la derecha mientras avanzamos hacia atrás*/
       moverMotor(DD);
       if (moverse == 1)
       {
@@ -197,7 +197,7 @@ int main(void)
         htim3.Instance->CCR2 = 0;
       }
       break;
-    case 'H':
+    case 'H': /*Girar a la izquierda mientras avanzamos hacia atrás*/
       moverMotor(DI);
       if (moverse == 1)
       {
@@ -205,7 +205,7 @@ int main(void)
         htim3.Instance->CCR2 = 1000;
       }
       break;
-    default:
+    default: /*Quedarse quieto*/
       htim2.Instance->CCR2 = 0;
       htim3.Instance->CCR2 = 0;
       break;
@@ -214,40 +214,43 @@ int main(void)
   }
   /* USER CODE END 3 */
 }
+
+/*En este método giramos el servoMotor al lado necesario para detectar 
+obstáculos con el sensor de ultrasonidos y hacemos que las ruedas giren 
+en un sentido o en otro*/
 void moverMotor(int modo)
 {
   switch (modo)
   {
-  case RECTO:
-    htim5.Instance->CCR1 = 62;
-
+  case RECTO:     /*Ir hacia delante*/
+    htim5.Instance->CCR1 = 62;                                          /*Movemos el servo hacia delante*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);  /*Dirección de las ruedas hacia delante*/
+    break;
+  case DERECHA:   /*Girar hacia la derecha*/
+    htim5.Instance->CCR1 = 27;                                          /*Movemos el servo hacia la derecha*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);                 /*Dirección de la rueda derecha hacia atrás*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);               /*Dirección de la rueda izquierda hacia delante*/
+    break;
+  case IZQUIERDA: /*Girar hacia la izquierda*/
+    htim5.Instance->CCR1 = 105;                                         /*Movemos el servo hacia la izquierda*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);               /*Dirección de la rueda derecha hacia delante*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);                 /*Dirección de la rueda izquierda hacia atrás*/
+    break;
+  case DETRAS:    /*Ir hacia atrás*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);    /*Dirección de las ruedas hacia atrás*/
+    break;
+  case RD:        /*Girar a la derecha mientras avanzamos hacia delante*/
+    htim5.Instance->CCR1 = 44;                                          /*Movemos el servo hacia la diagonal derecha*/
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
     break;
-  case DERECHA:
-    htim5.Instance->CCR1 = 27;
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_RESET);
+  case RI:        /*Girar a la izquierda mientras avanzamos hacia delante*/
+    htim5.Instance->CCR1 = 80;                                          /*Movemos el servo hacia la diagonal izquierda*/
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
     break;
-  case IZQUIERDA:
-    htim5.Instance->CCR1 = 105;
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, GPIO_PIN_SET);
-    break;
-  case DETRAS:
+  case DD:        /*Girar a la derecha mientras avanzamos hacia atrás*/
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
     break;
-  case RD:
-    htim5.Instance->CCR1 = 44;
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
-    break;
-  case RI:
-    htim5.Instance->CCR1 = 80;
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_RESET);
-    break;
-  case DD:
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
-    break;
-  case DI:
+  case DI:        /*Girar a la izquierda mientras avanzamos hacia atrás*/
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5 | GPIO_PIN_6, GPIO_PIN_SET);
     break;
   }
@@ -605,41 +608,41 @@ int _write(int file, char *ptr, int len)
   return len;
 }
 
+/*Cambiamos el modo del pin 8 (Ultrasonido)*/
 void cambiarModoPin(int modo)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if (modo == 0) //Output
+  if (modo == 0)      /*Output*/
   {
     GPIO_InitStruct.Pin = GPIO_PIN_8;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
   }
-  else if (modo == 1) //Input
+  else if (modo == 1) /*Input*/
   {
     GPIO_InitStruct.Pin = GPIO_PIN_8;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
   }
 }
-
+/*Calculamos la distancia a la que tenemos el obstáculo*/
 int calcularDistanciaCm(int veces)
 {
   int distancia = 0;
   distancia = (veces * 10) / 58;
-  //printf("D: %d cm.\r\n", distancia);
   HAL_Delay(10);
   return distancia;
 }
 
+/*Usamos el sensor de ultrasonidos para enviar y recibir 
+  una señal para saber cómo de lejos tenemos el obstáculo*/
 void ultrasonidos()
 {
   int times2 = 0;
   int times3 = 0;
-  cambiarModoPin(0); //Modo output
+  cambiarModoPin(0); /*Modo output*/
   times = 0;
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 
@@ -647,13 +650,13 @@ void ultrasonidos()
   {
   }
 
-  cambiarModoPin(1); //Modo Input
+  cambiarModoPin(1); /*Modo Input*/
 
-  while (!(GPIOA->IDR & GPIO_IDR_ID8_Msk))
+  while (!(GPIOA->IDR & GPIO_IDR_ID8_Msk))  /*Esperamos mientras que el Pin 8 tenga valor 0*/
   {
   }
   times2 = times;
-  while ((GPIOA->IDR & GPIO_IDR_ID8_Msk))
+  while ((GPIOA->IDR & GPIO_IDR_ID8_Msk))   /*Esperamos mientras que el Pin 8 tenga valor 1*/
   {
   }
   times3 = times;

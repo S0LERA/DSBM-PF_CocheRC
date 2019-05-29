@@ -52,3 +52,7 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 ### Versión 2.1
  - Reestructuración del código.
  - Mejora del tiempo de respuesta.
+
+ ### Versión 2.2
+ - Código comentado.
+ - Documentación actualizada.
