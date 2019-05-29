@@ -43,3 +43,8 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 
 ### Versión 1.8
  - Reestructuración del código.
+
+### Versión 2.0
+ - FUNCIONALIDAD COMPLETA.
+   - Ahora el ultrasonido hace bien los cálculos.
+ - Añadido esquema de cableado con Fritzing.

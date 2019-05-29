@@ -60,9 +60,8 @@ DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
 unsigned char data[1];
-volatile int times = 0;
+int volatile times = 0;
 int moverse = 1;
-long int contador = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -136,21 +135,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-    /* USER CODE END WHILE */
-    HAL_UART_Receive_IT(&huart1, data, sizeof(data));
-    //printf("Recibido: %c\r\n", data[0]);
+  { 
+    ultrasonidos();
+    HAL_Delay(100);
 
-    /*contador++;
-    if(contador == 10000000){
-      ultrasonidos();
-      contador = 0;
-    }*/
+    HAL_UART_Receive_IT(&huart1, data, sizeof(data));
+
     switch (data[0])
     {
     case 'F':
       moverMotor(RECTO);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -165,7 +159,6 @@ int main(void)
       break;
     case 'R':
       moverMotor(DERECHA);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -174,7 +167,6 @@ int main(void)
       break;
     case 'L':
       moverMotor(IZQUIERDA);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -183,7 +175,6 @@ int main(void)
       break;
     case 'I':
       moverMotor(RD);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -192,7 +183,6 @@ int main(void)
       break;
     case 'G':
       moverMotor(RI);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 0;
@@ -201,7 +191,6 @@ int main(void)
       break;
     case 'J':
       moverMotor(DD);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 1000;
@@ -210,7 +199,6 @@ int main(void)
       break;
     case 'H':
       moverMotor(DI);
-      //ultrasonidos();
       if (moverse == 1)
       {
         htim2.Instance->CCR2 = 0;
@@ -663,16 +651,14 @@ void ultrasonidos()
 
   while (!(GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
-    printf("WHILE1 \r\n");
   }
   times2 = times;
   while ((GPIOA->IDR & GPIO_IDR_ID8_Msk))
   {
-    printf("WHILE2 \r\n");
   }
   times3 = times;
 
-  if (calcularDistanciaCm(times3 - times2) < 40)
+  if (calcularDistanciaCm(times3 - times2) < 30)
   {
     moverse = 0;
   }
