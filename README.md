@@ -59,3 +59,6 @@ Este repositorio contiene el proyecto final de la asignatura Diseño de Sistemas
 
 ### Versión 2.5
  - Documentación Finalizada.
+
+### Versión 2.6
+ - Documentación Corregida.
